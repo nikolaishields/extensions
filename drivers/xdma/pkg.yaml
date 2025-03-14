@@ -1,0 +1,45 @@
+name: xdma-drivers
+variant: scratch
+shell: /bin/bash
+dependencies:
+  - stage: base
+steps:
+  - sources:
+      - url: https://github.com/Xilinx/dma_ip_drivers/archive/refs/heads/2023.2.1.zip
+      #- url: https://src.fedoraproject.org/lookaside/extras/libtirpc/libtirpc-{{ .LIBTIRPC_VERSION | replace "-" "." }}.tar.bz2/sha512/df0781a74ff9ded2d3c4f5eb7e05496b9f58eac8060c02c68331dc14c4a00304dcd19f46836f5756fe0d9d27095fd463d42dd696fcdff891516711b7d63deabe/libtirpc-{{ .LIBTIRPC_VERSION | replace "-" "." }}.tar.bz2
+        destination: xdma.zip
+        sha256: c86e3b3555d71076e22cef955fbb91804a355a5cf6ff0727572500d79f335955 #{{ .LIBTIRPC_SHA256 }}
+        sha512: 7d4a236dac16277992d3c1269c880dbd70eae4b14157bb590e0c2d0bcfba68145366042d27de0fd6143f0b0e9806eb92048d1ed056db7440a894b469d8d14284 #{{ .LIBTIRPC_SHA512 }}
+        # ref: https://git.alpinelinux.org/aports/tree/main/libc-dev
+        # https://wiki.musl-libc.org/faq.html#Q:-Why-is-%3Ccode%3Esys/queue.h%3C/code%3E-not-included
+      #- url: https://git.alpinelinux.org/aports/plain/main/libc-dev/sys-queue.h?id=87f42de0e1c1c6d2b229edfc126a3d4191c835ed
+      #  sha256: c13407edd0e33be73cae72514cb234f8612e1c0e54401c9448daffd3a240158b
+      #  sha512: 2f0d5e6e4dc3350285cf17009265dddcbe12431c111868eea39bc8cb038ab7c1f2acacbb21735c4e9d4a1fd106a8fc0f8611ea33987d4faba37dde5ce6da0750
+      #  destination: sys-queue.h
+    prepare:
+      - |
+        unzip xdma.zip
+        cd dma_ip_drivers-2023.2.1/XDMA/linux-kernel/xdma
+
+        #mkdir -p /usr/local/include/sys
+        #cp sys-queue.h /usr/local/include/sys/queue.h
+
+        #export CFLAGS="${CFLAGS} -I/usr/local/include"
+
+        #./configure \
+        #  --prefix=/usr/local \
+        #  --disable-gssapi
+    build:
+      - |
+        ls -la
+        #make -j $(nproc)
+    install:
+      - |
+        mkdir -p /rootfs
+        ls -la
+        cd dma_ip_drivers-2023.2.1/XDMA/linux-kernel/xdma
+        make install DESTDIR=/rootfs
+        rm -rf /rootfs/usr/local/share/man
+finalize:
+  - from: /rootfs
+    to: /rootfs

@@ -109,6 +109,7 @@ TARGETS += util-linux-tools
 TARGETS += v4l-uvc-drivers
 TARGETS += vmtoolsd-guest-agent
 TARGETS += wasmedge
+TARGETS += xdma-drivers
 TARGETS += xen-guest-agent
 TARGETS += zerotier
 TARGETS += zfs
